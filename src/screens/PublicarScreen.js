@@ -1,105 +1,105 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from 'react-native';
 
-export default function PublicarScreen({ navigation }) {
-  const [nombreProducto, setNombreProducto] = useState('');
-  const [precio, setPrecio] = useState('');
-  const [vendedor, setVendedor] = useState('');
-  const [mensajeError, setMensajeError] = useState('');
+export default function PublicarScreen({ navigation, route, agregarProducto, actualizarProducto }) {
+  const productoEditar = route.params?.productoEditar;
 
-  const validarYGuardar = () => {
-    if (!nombreProducto.trim() || !precio.trim() || !vendedor.trim()) {
-      setMensajeError('Todos los campos son obligatorios.');
+  const [nombre, setNombre] = useState(productoEditar ? productoEditar.nombre : '');
+  const [precio, setPrecio] = useState(productoEditar ? productoEditar.precio : '');
+  const [categoria, setCategoria] = useState(productoEditar ? productoEditar.categoria : '');
+  const [emprendedor, setEmprendedor] = useState(productoEditar ? productoEditar.emprendedor : '');
+
+  const guardarCambios = () => {
+    if (!nombre.trim() || !precio.trim() || !categoria.trim() || !emprendedor.trim()) {
+      Alert.alert('Campos incompletos', 'Por favor llena todos los datos del producto.');
       return;
     }
-    setMensajeError('');
-    Alert.alert(
-      'Producto registrado',
-      `"${nombreProducto}" ($${precio}) listo para revisión en el MVP.`,
-      [{ text: 'Volver al Inicio', onPress: () => navigation.navigate('Inicio') }]
-    );
+
+    if (productoEditar) {
+      actualizarProducto({
+        id: productoEditar.id,
+        nombre,
+        precio,
+        categoria,
+        emprendedor,
+      });
+    } else {
+      agregarProducto({
+        nombre,
+        precio,
+        categoria,
+        emprendedor,
+      });
+    }
+
+    navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Registrar Emprendimiento</Text>
+      <Text style={styles.encabezado}>
+        {productoEditar ? 'Editar Producto' : 'Publicar Nuevo Producto'}
+      </Text>
 
-      <Text style={styles.label}>Nombre del producto</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ej. Empanadas de viento"
-        value={nombreProducto}
-        onChangeText={setNombreProducto}
+        placeholder="Nombre del producto o servicio"
+        value={nombre}
+        onChangeText={setNombre}
       />
-
-      <Text style={styles.label}>Precio ($)</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ej. 1.25"
+        placeholder="Precio (ej. 2.50)"
         keyboardType="numeric"
         value={precio}
         onChangeText={setPrecio}
       />
-
-      <Text style={styles.label}>Nombre del estudiante y curso</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ej. Juan Pérez (3ro Software)"
-        value={vendedor}
-        onChangeText={setVendedor}
+        placeholder="Categoría (Comida, Tutorías, Diseño...)"
+        value={categoria}
+        onChangeText={setCategoria}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Tu nombre y carrera (ej. Eduardo - Software)"
+        value={emprendedor}
+        onChangeText={setEmprendedor}
       />
 
-      {mensajeError ? <Text style={styles.error}>{mensajeError}</Text> : null}
-
-      <TouchableOpacity style={styles.boton} onPress={validarYGuardar}>
-        <Text style={styles.textoBoton}>Guardar Producto</Text>
+      <TouchableOpacity style={styles.botonGuardar} onPress={guardarCambios}>
+        <Text style={styles.textoBoton}>
+          {productoEditar ? 'Guardar Cambios' : 'Publicar en Catálogo'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F4F6F9',
-    padding: 20,
-  },
-  titulo: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1E293B',
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#F3F4F6' },
+  encabezado: { fontSize: 22, fontWeight: 'bold', color: '#1E3A8A', marginBottom: 20 },
   input: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
+    backgroundColor: '#FFF',
     padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
     marginBottom: 14,
-    fontSize: 15,
   },
-  error: {
-    color: '#DC2626',
-    marginBottom: 12,
-    fontWeight: '600',
-  },
-  boton: {
-    backgroundColor: '#1E293B',
+  botonGuardar: {
+    backgroundColor: '#059669',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 10,
   },
-  textoBoton: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  textoBoton: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
 });
