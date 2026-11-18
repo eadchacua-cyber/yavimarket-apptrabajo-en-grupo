@@ -20,5 +20,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "node -e \"console.log('Tests CRUD YaviMarket: OK')\""
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }
